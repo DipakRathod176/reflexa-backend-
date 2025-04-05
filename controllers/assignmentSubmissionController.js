@@ -115,8 +115,10 @@ const submitAssignment = async (req, res) => {
 
 // ✅ New Endpoint: Get All Submissions
 const getAllSubmissions = async (req, res) => {
+  let id =req.params.id
+
   try {
-    const submissions = await Submission.find()
+    const submissions = await Submission.find({assignmentId:id})
       .populate("studentId", "name email") // Fetch student details
       .populate("assignmentId", "title description"); // Fetch assignment details
 

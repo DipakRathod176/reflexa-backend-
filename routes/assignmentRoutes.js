@@ -22,6 +22,6 @@ router.delete("/assignments/:id", auth(["admin"]), deleteAssignment);
 
 // Add multer middleware for file uploads
 router.post("/assignments/:id/submit", auth(["student"]), uploadAssignmentImage, submitAssignment);
-router.get("/getsubmission", auth(["admin"]), getAllSubmissions);
+router.get("/getsubmission/:id", auth(["admin"]), getAllSubmissions);
 
 module.exports = router;

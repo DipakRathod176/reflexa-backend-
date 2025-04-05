@@ -1,40 +1,46 @@
-require("dotenv").config();
-
 // server.js
-const express = require("express");
-const cors = require("cors");
-const connectDB = require("./config/db");
-const path = require("path");
+import dotenv from "dotenv";
+dotenv.config();
+
+import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import connectDB from "./config/db.js";
 
 // Import routes
-const routes = [
- 
-  { path: "/api/users", route: require("./routes/userRoutes") },
-  { path: "/api/auth", route: require("./routes/authRoutes") },
-  { path: "/api/assignment", route: require("./routes/assignmentRoutes") },
-];
+import userRoutes from "./routes/userRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import assignmentRoutes from "./routes/assignmentRoutes.js";
+
+// Setup __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Connect to database
+// Connect to MongoDB
 connectDB();
 
 // Middleware
-app.use(cors({origin:"*"
-}));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-// Register routes
-app.get('/', (req, res)=>{
-  res.json({name:"rohan"});
-})
-routes.forEach((route) => {
-  app.use(route.path, route.route);
-});
+// API Routes
+app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/assignment", assignmentRoutes);
 
+// Serve static files from Vite dist folder
+app.use(express.static(path.join(__dirname, "dist")));
+
+// Fallback route to serve frontend for any unknown route
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
